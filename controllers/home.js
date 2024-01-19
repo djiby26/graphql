@@ -6,17 +6,99 @@ module.exports = (req, res) => {
 };
 
 async function getHomeData(bearerToken, res) {
+	// const graphqlQuery = `
+	// 	query {
+	// 		user {
+	// 			id
+	// 			login
+	// 			firstName
+	// 			lastName
+	// 			auditRatio
+	// 			email
+	// 		}
+	// 	}
+	// `;
+
 	const graphqlQuery = `
-		query {
-			user {
-				id
-				login
-				firstName
-				lastName
-				auditRatio
-				email
-			}	
+	query User {
+		user {
+			auditRatio
+			campus
+			email
+			firstName
+			id
+			lastName
+			login
+			profile
+			totalDown
+			totalUp
+			updatedAt
+			audits(
+				where: {
+					group: {
+						status: { _neq: finished }
+						captain: { isAvailable: { _eq: true } }
+					}
+				}
+			) {
+				group {
+					captainLogin
+					status
+				}
+				private {
+					code
+				}
+			}
 		}
+		transaction(
+			order_by: [{ type: desc }, { amount: desc }]
+			distinct_on: [type]
+			where: { type: { _like: "skill_%" } }
+		) {
+			amount
+			type
+		}
+		event(
+			where: {
+				usersRelation: { userId: { _eq: 2047 } }
+				object: { type: { _in: ["module", "piscine"] } }
+			}
+		) {
+			id
+			path
+			endAt
+			createdAt
+			parent {
+				id
+				path
+				registrationId
+			}
+			pathByPath {
+				path_archives {
+					status
+				}
+			}
+			registration {
+				id
+				attrs
+				endAt
+				startAt
+			}
+			usersRelation(where: { userId: { _eq: 2047 } }) {
+				createdAt
+			}
+		}
+		transaction_aggregate(
+			where: { type: { _eq: "xp" }, eventId: { _eq: 56 } }
+		) {
+	aggregate {
+				sum {
+					amount
+				}
+			}
+		}
+	}
+	
 	`;
 
 	const request = {
