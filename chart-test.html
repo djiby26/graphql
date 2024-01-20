@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Bar Chart with Labels</title>
+    </head>
+
+    <body>
+
+        <script>
+            function drawBarChart(data) {
+                const svgWidth = 250;
+                const svgHeight = 400;
+                const barPadding = 2;
+
+                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svg.setAttribute("width", svgWidth);
+                svg.setAttribute("height", svgHeight);
+                document.body.appendChild(svg);
+
+                const barWidth = (svgWidth / data.length) - barPadding;
+
+                for (let i = 0; i < data.length; i++) {
+                    const barHeight = data[i].value * 10; // You can adjust this scaling factor as needed
+
+                    // Displaying the value as text above the bar
+                    const text1 = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    text1.setAttribute("x", i * (barWidth + barPadding) + barWidth / 2);
+                    text1.setAttribute("y", svgHeight - barHeight - 5); // Adjust the offset as needed
+                    text1.setAttribute("text-anchor", "middle");
+                    text1.setAttribute("fill", "black"); // You can customize the text color
+                    text1.textContent = data[i].name;
+
+                    svg.appendChild(text1);
+
+                    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    rect.setAttribute("x", i * (barWidth + barPadding));
+                    rect.setAttribute("y", svgHeight - barHeight);
+                    rect.setAttribute("width", barWidth);
+                    rect.setAttribute("height", barHeight);
+                    rect.setAttribute("fill", "gray"); // You can customize the bar color
+                    svg.appendChild(rect);
+
+                    const text2 = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    text2.setAttribute("x", i * (barWidth + barPadding) + barWidth / 2);
+                    text2.setAttribute("y", 350); // Adjust the offset as needed
+                    text2.setAttribute("text-anchor", "middle");
+                    text2.setAttribute("fill", "white"); // You can customize the text color
+                    text2.textContent = data[i].value;
+                    svg.appendChild(text2);
+
+
+                }
+            }
+
+            // Example usage:
+            const data = [
+                { name: "Hello", value: 10 },
+                { name: "B", value: 20 },
+                { name: "C", value: 15 },
+                { name: "D", value: 25 },
+                { name: "E", value: 30 }
+            ];
+            drawBarChart(data);
+        </script>
+
+    </body>
+
+</html>

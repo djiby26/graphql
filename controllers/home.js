@@ -100,19 +100,22 @@ async function getHomeData(bearerToken, res) {
 				}
 			}
 		}
-		pass_fail_ratio: user {
-			fail: audits(where: { grade: { _is_null: false }, _and: { grade: { _lt: 1 } } }) {
-				id
-				auditorLogin
-				grade
+		audit_pass_fail_count : user {
+			fail: 
+				audits_aggregate(
+					where: { grade: { _is_null: false }, _and: { grade: { _lt: 1 } } }) {
+				aggregate{
+					count
+				}
 			}
-			pass: audits(
-				where: { grade: { _is_null: false }, _and: { grade: { _gte: 1 } } }
-			) {
-				id
-				auditorLogin
-				grade
+			pass: 
+				audits_aggregate(
+					where: { grade: { _is_null: false }, _and: { grade: { _gte: 1 } } }) {
+				aggregate{
+					count
+				}
 			}
+		
 		}
 	}
 	`;
@@ -151,17 +154,22 @@ async function handleApiResponse(apiResponse, httpResponse) {
 		const userInfos = apiResponse.data.user[0];
 		const progress = userInfos.progresses[0];
 		let currentProject = progress ? progress.object.name : "no project";
-		let finishedProjectCount = userInfos.finished_project.aggregate.count
+		let finishedProjectCount = userInfos.finished_project.aggregate.count;
 		let div_01_xp = Math.round(
 			apiResponse.data.div_01.aggregate.sum.amount / 1000
 		);
+		let auditPassFailCount = apiResponse.data.audi_pass_fail_count[0];
+		let auditPassCount = auditPassFailCount ? auditPassFailCount.pass : 0;
+		let auditFailCount = auditPassFailCount ? auditPassFailCount.fail : 0;
 
 		// Handle a successful response
 		httpResponse.render("index.html", {
 			...userInfos,
 			currentProject,
 			div_01_xp,
-			finishedProjectCount
+			finishedProjectCount,
+			auditPassCount,
+			auditFailCount,
 		});
 
 		console.log(progress);
