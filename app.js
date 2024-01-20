@@ -25,6 +25,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
+	
 	// let filePath = path.join(__dirname, "views/login.html");
 	renderLogin(req, res);
 });

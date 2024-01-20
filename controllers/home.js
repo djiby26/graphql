@@ -1,3 +1,5 @@
+const { response } = require("express");
+
 const API_ENDPOINT = `https://learn.zone01dakar.sn/api/graphql-engine/v1/graphql`;
 
 module.exports = (req, res) => {
@@ -6,19 +8,6 @@ module.exports = (req, res) => {
 };
 
 async function getHomeData(bearerToken, res) {
-	// const graphqlQuery = `
-	// 	query {
-	// 		user {
-	// 			id
-	// 			login
-	// 			firstName
-	// 			lastName
-	// 			auditRatio
-	// 			email
-	// 		}
-	// 	}
-	// `;
-
 	const graphqlQuery = `
 	query User {
 		user {
@@ -29,7 +18,6 @@ async function getHomeData(bearerToken, res) {
 			id
 			lastName
 			login
-			profile
 			totalDown
 			totalUp
 			updatedAt
@@ -44,61 +32,89 @@ async function getHomeData(bearerToken, res) {
 				group {
 					captainLogin
 					status
+					object {
+						name
+					}
 				}
 				private {
 					code
 				}
 			}
-		}
-		transaction(
-			order_by: [{ type: desc }, { amount: desc }]
-			distinct_on: [type]
-			where: { type: { _like: "skill_%" } }
-		) {
-			amount
-			type
-		}
-		event(
-			where: {
-				usersRelation: { userId: { _eq: 2047 } }
-				object: { type: { _in: ["module", "piscine"] } }
+			transactions(
+				where: { type: {_like:"skill_%"} }
+				distinct_on:[type]
+				order_by: [{ type: desc }, { amount: desc }]) {
+				amount
+				type
+		
 			}
-		) {
-			id
-			path
-			endAt
-			createdAt
-			parent {
-				id
-				path
-				registrationId
-			}
-			pathByPath {
-				path_archives {
-					status
+		   finished_project: groups_aggregate(
+				where: {
+					group: { object: { type: { _eq: "project" } }, status: { _eq: finished } }
+				}
+			) {
+				aggregate {
+					count
 				}
 			}
-			registration {
-				id
-				attrs
-				endAt
-				startAt
-			}
-			usersRelation(where: { userId: { _eq: 2047 } }) {
-				createdAt
+	
+			 progresses(
+				where: { object: { type: { _eq: "project" } }, isDone: { _eq: false } }
+				order_by: {createdAt: desc}
+				limit:1
+			) {
+				grade
+				isDone
+				userLogin
+				object {
+					name
+					type
+				}
 			}
 		}
-		transaction_aggregate(
-			where: { type: { _eq: "xp" }, eventId: { _eq: 56 } }
+	
+		piscine_go: transaction_aggregate(
+			where: { type: { _eq: "xp" }, eventId: { _eq: 23 } }
 		) {
-	aggregate {
+			aggregate {
 				sum {
 					amount
 				}
 			}
 		}
+		piscine_js: transaction_aggregate(
+			where: { type: { _eq: "xp" }, eventId: { _eq: 95 } }
+		) {
+			aggregate {
+				sum {
+					amount
+				}
+			}
+		}
+		div_01: transaction_aggregate(
+			where: { type: { _eq: "xp" }, eventId: { _eq: 56 } }
+		) {
+			aggregate {
+				sum {
+					amount
+				}
+			}
+		}
+		pass_fail_ratio: user {
+			fail: audits(where: { grade: { _is_null: false }, _and: { grade: { _lt: 1 } } }) {
+				id
+				auditorLogin
+				grade
+			}
+			pass: audits(
+				where: { grade: { _is_null: false }, _and: { grade: { _gte: 1 } } }
+			) {
+				id
+				auditorLogin
+				grade
+			}
+		}
 	}
-	
 	`;
 
 	const request = {
@@ -119,7 +135,7 @@ async function getHomeData(bearerToken, res) {
 	}
 }
 
-function handleApiResponse(apiResponse, httpResponse) {
+async function handleApiResponse(apiResponse, httpResponse) {
 	if (apiResponse.errors && apiResponse.errors.length > 0) {
 		const error = apiResponse.errors[0];
 		if (error.extensions && error.extensions.code === "invalid-jwt") {
@@ -132,8 +148,23 @@ function handleApiResponse(apiResponse, httpResponse) {
 			return;
 		}
 	} else {
+		const userInfos = apiResponse.data.user[0];
+		const progress = userInfos.progresses[0];
+		let currentProject = progress ? progress.object.name : "no project";
+		let finishedProjectCount = userInfos.finished_project.aggregate.count
+		let div_01_xp = Math.round(
+			apiResponse.data.div_01.aggregate.sum.amount / 1000
+		);
+
 		// Handle a successful response
-		httpResponse.render("index.html");
+		httpResponse.render("index.html", {
+			...userInfos,
+			currentProject,
+			div_01_xp,
+			finishedProjectCount
+		});
+
+		console.log(progress);
 		console.log("successfull login");
 	}
 }
