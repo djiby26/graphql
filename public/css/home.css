@@ -1992,3 +1992,34 @@ a {
 .w3-hover-border-pale-blue:hover {
     border-color: #e7ffff !important
 }
+
+.bar {
+    fill: #aaa;
+    height: 21px;
+
+    text {
+        fill: #555;
+    }
+}
+
+.chart:hover,
+.chart:focus {
+    .bar {
+        fill: #aaa;
+    }
+}
+
+.bar:hover,
+.bar:focus {
+    fill: red !important;
+
+    text {
+        fill: red;
+    }
+}
+
+figcaption {
+    font-weight: bold;
+    color: #000;
+    margin-bottom: 20px;
+}

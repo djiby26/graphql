@@ -7,6 +7,24 @@ module.exports = (req, res) => {
 	getHomeData(jwtToken, res);
 };
 
+function drawLineChart(data, width, height, lineColor) {
+	const maxValue = Math.max(...data);
+	const xScale = width / (data.length - 1);
+	const yScale = height / maxValue;
+
+	const points = data.map(
+		(value, index) => `${index * xScale},${height - value * yScale}`
+	);
+
+	console.log(points);
+	const pathData = `M${points.join(" L")}`;
+	const pathDataSlice = pathData.split(" ");
+	return pathDataSlice;
+	//  `<svg width=${width} height=${height}>
+	// 		<path d=${pathData} fill="none" stroke="red" strokeWidth="2" />
+	// 	</svg>`;
+}
+
 async function getHomeData(bearerToken, res) {
 	const graphqlQuery = `
 	query User {
@@ -158,18 +176,38 @@ async function handleApiResponse(apiResponse, httpResponse) {
 		let div_01_xp = Math.round(
 			apiResponse.data.div_01.aggregate.sum.amount / 1000
 		);
-		let auditPassFailCount = apiResponse.data.audi_pass_fail_count[0];
+		let piscine_go_xp = Math.round(
+			apiResponse.data.piscine_go.aggregate.sum.amount / 1000
+		);
+
+		let piscine_js_xp = Math.round(
+			apiResponse.data.piscine_js.aggregate.sum.amount / 1000
+		);
+		let auditPassFailCount = apiResponse.data.audi_pass_fail_count;
 		let auditPassCount = auditPassFailCount ? auditPassFailCount.pass : 0;
 		let auditFailCount = auditPassFailCount ? auditPassFailCount.fail : 0;
+
+		let skills = [];
+		let skillsTransactions = [...userInfos.transactions];
+		if (skillsTransactions.length > 0) {
+			skills = skillsTransactions.map((e) => {
+				e.type = e.type.split("_")[1];
+				return e;
+			});
+		}
 
 		// Handle a successful response
 		httpResponse.render("index.html", {
 			...userInfos,
 			currentProject,
 			div_01_xp,
+			piscine_go_xp,
+			piscine_js_xp,
 			finishedProjectCount,
 			auditPassCount,
 			auditFailCount,
+			skills,
+			drawLineChart,
 		});
 
 		console.log(progress);
