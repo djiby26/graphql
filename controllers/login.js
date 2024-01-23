@@ -33,7 +33,7 @@ const loginController = async (req, res) => {
 
 async function signin(emailOrUsername, password) {
 	let credentials = `${emailOrUsername}:${password}`;
-	let base64Credentials = btoa(credentials);
+	let base64Credentials = Buffer.from(credentials).toString("base64");
 	let options = {
 		method: "post",
 		headers: {
@@ -41,7 +41,13 @@ async function signin(emailOrUsername, password) {
 			Authorization: `Basic ${base64Credentials}`,
 		},
 	};
-	return await fetch(SIGNIN_URL, options);
+	try {
+		let response = fetch(SIGNIN_URL, options);
+		return await response;
+	} catch (error) {
+		console.log("error happened:", error);
+		return;
+	}
 }
 
 module.exports = { renderLogin, loginController };

@@ -753,6 +753,7 @@ a {
 }
 
 @media (min-width:993px) {
+
     .w3-col.l1 {
         width: 8.33333%
     }
@@ -799,6 +800,10 @@ a {
 
     .w3-col.l12 {
         width: 99.99999%
+    }
+
+    .skills {
+        margin-left: 0px;
     }
 }
 

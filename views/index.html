@@ -161,39 +161,33 @@
 						<%} %>
 				</ul>
 			</div>
+			<div class="w3-container skills">
+				<h5>A graph that shows the programming skills acquired</h5>
+				<figure>
+					<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+						class="chart" width="900" height="350" aria-labelledby="title" role="img">
+						<% skills.forEach((sk,i)=>{ %>
+							<g class="bar">
+								<rect width="<%= sk.amount*8 %>" height="19" y="<%= i*20 +20 %>"></rect>
+								<text x="<%= sk.amount*8 + 5 %>" y="<%= i*20+20+8 %>" dy=".35em">
+									<%= sk.amount %>% of <%= sk.type %>
+								</text>
+							</g>
+							<% }) %>
 
-		</div>
+					</svg>
+				</figure>
+			</div>
 
-		</div>
-		<hr />
 
-		<div class="w3-container">
-			<h5>A graph that shows the programming skills acquired</h5>
-			<figure>
-				<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-					class="chart" width="900" height="350" aria-labelledby="title" role="img" style="display: flex;">
-					<% skills.forEach((sk,i)=>{ %>
-						<g class="bar">
-							<rect width="<%= sk.amount*8 %>" height="19" y="<%= i*20 +20 %>"></rect>
-							<text x="<%= sk.amount*8 + 5 %>" y="<%= i*20+20+8 %>" dy=".35em">
-								<%= sk.amount %>% of <%= sk.type %>
-							</text>
-						</g>
-						<% }) %>
-
-				</svg>
-			</figure>
-		</div>
-		<hr />
-
-		<!-- Footer -->
-		<footer class="w3-container w3-padding-16 w3-grey">
-			<h4>FOOTER</h4>
-			<p>
-				Powered by
-				<a href="https://learn.zone01dakar.sn/" target="_blank">Zone01 Dakar</a>
-			</p>
-		</footer>
+			<!-- Footer -->
+			<footer class="w3-container w3-padding-16 w3-grey">
+				<h4>FOOTER</h4>
+				<p>
+					Powered by
+					<a href="https://learn.zone01dakar.sn/" target="_blank">Zone01 Dakar</a>
+				</p>
+			</footer>
 		</div>
 
 		<script>
