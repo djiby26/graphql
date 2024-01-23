@@ -2023,3 +2023,8 @@ figcaption {
     color: #000;
     margin-bottom: 20px;
 }
+
+.pie-chart-value {
+    fill: none;
+    stroke-width: 50;
+}

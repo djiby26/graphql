@@ -7,24 +7,6 @@ module.exports = (req, res) => {
 	getHomeData(jwtToken, res);
 };
 
-function drawLineChart(data, width, height, lineColor) {
-	const maxValue = Math.max(...data);
-	const xScale = width / (data.length - 1);
-	const yScale = height / maxValue;
-
-	const points = data.map(
-		(value, index) => `${index * xScale},${height - value * yScale}`
-	);
-
-	console.log(points);
-	const pathData = `M${points.join(" L")}`;
-	const pathDataSlice = pathData.split(" ");
-	return pathDataSlice;
-	//  `<svg width=${width} height=${height}>
-	// 		<path d=${pathData} fill="none" stroke="red" strokeWidth="2" />
-	// 	</svg>`;
-}
-
 async function getHomeData(bearerToken, res) {
 	const graphqlQuery = `
 	query User {
@@ -183,9 +165,14 @@ async function handleApiResponse(apiResponse, httpResponse) {
 		let piscine_js_xp = Math.round(
 			apiResponse.data.piscine_js.aggregate.sum.amount / 1000
 		);
-		let auditPassFailCount = apiResponse.data.audi_pass_fail_count;
-		let auditPassCount = auditPassFailCount ? auditPassFailCount.pass : 0;
-		let auditFailCount = auditPassFailCount ? auditPassFailCount.fail : 0;
+
+		let auditPassFailCount = apiResponse.data.audit_pass_fail_count[0];
+		let auditPassCount = auditPassFailCount
+			? auditPassFailCount.pass.aggregate.count
+			: 0;
+		let auditFailCount = auditPassFailCount
+			? auditPassFailCount.fail.aggregate.count
+			: 0;
 
 		let skills = [];
 		let skillsTransactions = [...userInfos.transactions];
@@ -194,6 +181,23 @@ async function handleApiResponse(apiResponse, httpResponse) {
 				e.type = e.type.split("_")[1];
 				return e;
 			});
+		}
+
+		let passFailData = [
+			{
+				name: "pass",
+				color: "red",
+				value: auditPassCount,
+			},
+			{
+				name: "fail",
+				color: "rebeccapurple",
+				value: auditFailCount,
+			},
+		];
+		let totalValue = 0;
+		for (var i = 0; i < passFailData.length; i++) {
+			totalValue += passFailData[i].value;
 		}
 
 		// Handle a successful response
@@ -207,10 +211,11 @@ async function handleApiResponse(apiResponse, httpResponse) {
 			auditPassCount,
 			auditFailCount,
 			skills,
-			drawLineChart,
+			passFailData,
+			totalValue,
 		});
 
-		console.log(progress);
+		// console.log(progress);
 		console.log("successfull login");
 	}
 }

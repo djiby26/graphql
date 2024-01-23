@@ -1,6 +1,8 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const { renderLogin, loginController } = require("./controllers/login");
+const { logoutController } = require("./controllers/logout");
+
 const homeController = require("./controllers/home");
 const path = require("path");
 
@@ -20,18 +22,19 @@ app.get("/", (req, res) => {
 		res.redirect("/login");
 		return;
 	}
-	// let filePath = path.join(__dirname, "views/index.html");
 	homeController(req, res);
 });
 
 app.get("/login", (req, res) => {
-	
-	// let filePath = path.join(__dirname, "views/login.html");
 	renderLogin(req, res);
 });
 
 app.post("/login", (req, res) => {
 	loginController(req, res);
+});
+
+app.get("/logout", (req, res) => {
+	logoutController(req, res);
 });
 
 // app.post("/500", (req, res) => {
