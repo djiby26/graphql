@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<!-- <script src="https://cdn.tailwindcss.com"></script> -->
-
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat" />
 		<title>Login</title>
 	</head>
 	<style>
 		body {
+			font-family: "Montserrat", sans-serif;
 			background-color: rgb(211, 224, 244);
 		}
+
 		.login-form {
 			background-color: white;
 			display: flex;
@@ -22,6 +24,7 @@
 			border-radius: 15px;
 			padding: 30px;
 		}
+
 		.input {
 			margin-bottom: 5rem;
 			display: flex;
@@ -29,18 +32,21 @@
 			justify-content: center;
 			align-items: center;
 		}
+
 		.input input {
 			margin: 0 10px 0 10px;
 			height: 3rem;
 			background-color: rgb(239, 241, 246);
 			padding: 0 10px 0 10px;
 		}
+
 		.input label,
 		input {
 			width: 100%;
 		}
+
 		.input label {
-			font-weight: 500;
+			font-weight: 600;
 			text-align: left;
 			margin-bottom: 5px;
 		}
@@ -50,41 +56,38 @@
 			color: white;
 			height: 3rem;
 			font-weight: 500;
+			border: none;
+			cursor: pointer;
 		}
 
 		.input input,
 		button[type="submit"] {
 			border-radius: 12px;
 		}
+
 		button:hover {
 			background-color: rgb(84, 159, 250);
 		}
 	</style>
+
 	<body>
 		<form action="/login" method="post" class="login-form">
 			<div class="input username">
 				<label for="emailOrUsername">Email or Username</label>
-				<input
-					required
-					name="emailOrUsername"
-					placeholder="username or email"
-					type="text"
-				/>
+				<input required name="emailOrUsername" placeholder="username or email" type="text" />
 			</div>
 			<div class="input password">
 				<label for="password">Password</label>
-				<input
-					type="password"
-					required
-					name="password"
-					placeholder="********"
-				/>
+				<input type="password" required name="password" placeholder="********" />
 			</div>
 			<button type="submit">Login</button>
 			<% if (error){ %>
-			<p class="messages" style="color: red"><%= message %></p>
-			<%}%>
+				<p class="messages" style="color: red">
+					<%= message %>
+				</p>
+				<%}%>
 		</form>
 	</body>
 	<!-- <script src="/js/login.js"></script> -->
+
 </html>

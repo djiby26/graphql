@@ -46,7 +46,6 @@ async function getHomeData(bearerToken, res) {
 				order_by: [{ type: desc }, { amount: desc }]) {
 				amount
 				type
-		
 			}
 		   finished_project: groups_aggregate(
 				where: {
@@ -115,7 +114,6 @@ async function getHomeData(bearerToken, res) {
 					count
 				}
 			}
-		
 		}
 	}
 	`;
